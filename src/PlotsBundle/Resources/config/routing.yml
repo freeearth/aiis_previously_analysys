@@ -1,0 +1,6 @@
+plots_homepage:
+    path:     /
+    defaults: { _controller: PlotsBundle:Default:index }
+plots_graph:
+    path:     /DataForGraph
+    defaults: { _controller: PlotsBundle:Default:graph }

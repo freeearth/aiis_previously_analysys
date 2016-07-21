@@ -1,0 +1,345 @@
+{% block title %}
+    <title>
+        Предварительный анализ данных из архива АИИС
+    </title>
+{% endblock %}
+{% block stylesheets %}
+    <link href="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.theme.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/css/main.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/js/bootstrap-multiselect/docs/css/bootstrap-3.3.2.min.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/css/bootstrap-multiselect.css') }}" type="text/css" rel="stylesheet">
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="{{asset('bundles/plots/js/jquery-ui-1.11.0/external/jquery/jquery.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-1.11.3.min.js') }}"></script>
+    
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.js') }}"></script>
+    {#<script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-ui-1.8.23/ui/i18n/jquery.ui.datepicker-ru.js') }}"></script>#}
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/docs/js/bootstrap-3.3.2.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/js/bootstrap-multiselect.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/js/bootstrap-multiselect-collapsible-groups.js')}}"></script>
+    {#jquery flot#}
+    <script type="text/javascript" src="{{asset('bundles/plots/js/flot/jquery.flot.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/flot/jquery.flot.time.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/flot/jquery.flot.canvas.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/date.format/date.format.js')}}"></script>
+    <script language="text/javascript" type="{{asset('bundles/plots/text/javascript" src="js/jquery.flot.navigationControl/lib/jquery.colorhelpers.js')}}"></script>
+    <script language="text/javascript" type="{{asset('bundles/plots/text/javascript" src="js/jquery.flot.navigationControl/lib/jquery.flot.navigate.js')}}"></script>
+    <script language="text/javascript" type="{{asset('bundles/plots/text/javascript" src="js/flot/jquery.flot.resize.js')}}"></script>
+
+    {#Save image as#}
+    <script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.saveAsImage.js/lib/base64.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.saveAsImage.js/lib/canvas2image.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.saveAsImage.js/jquery.flot.saveAsImage.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.saveAsImage.js/lib/jquery.colorhelpers.js')}}"></script>
+    
+    {#при подключении отваливается отображение коректной даты<script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.coordinate.js/jquery.flot.coordinate.js')}}"></script>#}
+    {#Navigation Control#}
+    {#<script language="text/javascript" type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.navigationControl/jquery.flot.navigationControl.js')}}"></script>#}
+{% endblock %}
+{% block body %}
+        <script type="text/javascript">
+            var common_params = [];
+            common_params.push({
+                canvas: true,
+                series: {
+                    lines: { show: true, fill:false, lineWidth: 0.8 },
+                    points: {
+                        show: true
+                    } 
+                },
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%Y-%m-%d %H:%M:%S",
+                    ticks: 5,
+                    zoomRange: [0.1, 10],
+                    panRange: [0, 1150]
+                },
+                yaxis: {
+                    zoomRange: [0.1, 10],
+                    panRange: [0, 1150]
+                }, 
+                grid: {
+                    hoverable: true,
+                    clickable: true,
+                    backgroundColor: 'white'
+                },
+                legend: {
+                    show: true,
+                    labelBoxBorderColor: 'black',
+                    //backgroundColor: 'grey'
+                },zoom: {
+                interactive: true
+                },
+                pan: {
+                interactive: true
+                }//,
+                //navigationControl: {
+                //position: { left: "30px", top: "20px" },
+                //display: "block"
+                //}
+            });//общие параметры для графиков
+             
+            $(document).ready(function() {
+                $('.param_meteo_grapth').multiselect({
+                    buttonWidth: '200px',
+                    enableFiltering: true,
+                    nonSelectedText: 'Ничего не выбрано',
+                    nSelectedText: 'выбрано',
+                    allSelectedText: 'Выбрано все',
+                    //buttonText: function(options, select) {
+                        //return 'Метеопараметры';
+                    //}
+                });
+                $("<div id='tooltip'></div>").css({
+                    position: "absolute",
+                    display: "none",
+                    border: "1px solid #fdd",
+                    padding: "2px",
+                    "background-color": "#fee",
+                    opacity: 0.80
+                }).appendTo("body");
+                $("#graph").bind("plothover", function (event, pos, item) {
+                    if ($("#enableTooltip:checked").length > 0) {
+                        if (item) {
+                            var datetime = new Date(item.datapoint[0]),
+                            hours = datetime.getHours()-3,
+                            y = item.datapoint[1].toFixed(2);
+                            datetime.setHours(hours); 
+                            $("#tooltip").html(item.series.label + " of " + datetime.format("Y-m-d H:i:s")+  " <br\> " + y)
+                            .css({top: item.pageY+5, left: item.pageX+5})
+                            .fadeIn(200);
+                        } else {
+                            $("#tooltip").hide();
+                        }
+                    }
+                });
+                //var temperature_default = JSON.parse({#datetime_default_view#});
+               //var datetime_default = JSON.parse({#datetime_default_view#});
+                //var datasets = [];
+                {#for (prop in temperature_default) {
+                    datasets.push([datetime_default[prop][0],temperature_default[prop][0]]);
+                }
+                            
+                 //var plot =$.plot("#graph", datasets['usa'], options );
+                
+                var def_ault =   [   
+                                {
+                                    label:"USA",
+                                    data: datasets
+                                }
+                            ];
+                var plot = $.plot("#graph",def_ault,common_params[0]); 
+                plot.draw();#}
+                
+                $('.button_grapth').on('click', function() {
+                    $(".button_grapth").attr('disabled', true);
+                    $("#graph").empty();
+                    var loading_imit = "<div id='loadingmessage'\n\
+                                            style='z-index:100;display:none;position:relative;width:100%;height:100%;background:white;opacity:0.6'>\n\
+                                            <div>\n\
+                                                <p align='center' style='display: block;left: 330px;position: absolute;top: 110px;color:grey'><b>Пожалуйста подождите,<br/>идет загрузка</b></p>\n\
+                                                <img style='z-index:10;display: block;left: 400px;position: absolute;top: 150px;'\n\
+                                                 src='{{ asset('bundles/plots/images/ajax/ajax-loader.gif')}}'/>\n\
+                                            </div>\n\
+                                        </div>";
+                    $("#graph").append(loading_imit);
+                    var params = $("#get_graph").serializeArray();
+                    $('#loadingmessage').show();
+                    $.ajax({
+                       data: "params="+encodeURIComponent(JSON.stringify(params)),
+                       url:"{{adress_name}}DataForGraph",
+                       //contentType:"application/json;charset=UTF-8",
+                       type: "post",
+                       success: function(meteo_arr){
+                            $('#loadingmessage').hide();
+                            if (meteo_arr==0x01) {
+                                alert("Не выбрано ни одного метеорологического параметра для построения графика.\nПожалуйста выберите хотя-бы один параметр и повторите запрос.");
+                                return;
+                            }
+                             if (meteo_arr==0x02) {
+                                alert("Дискретность не может превышать длительность файла");
+                                return;
+                            }
+                            var datetime = [];//массив для даты и времени
+                            var meteo_data = [];//массив для метеопараметров
+                            var plot_data = [];
+                            if (meteo_arr!=="null"&&meteo_arr!=="error!") {
+                                var res = JSON.parse(meteo_arr);
+                                for (var prop in res) {
+                                    if (prop === "datetime") {
+                                        datetime.push(res[prop][0]);
+                                    }
+                                    if (prop !== "datetime") {
+                                        meteo_data.push(
+                                                            {
+                                                                label:prop,
+                                                                data: res[prop][0]
+                                                            }
+                                        );
+                                    }
+                                }
+                                var data_arrays = [];//массив для данных графика
+                                for (var prop in meteo_data) {
+                                    //странная инициализация
+                                    data_arrays[prop] = new Array();
+                                    data_arrays[prop]["label"] = new Array();
+                                    data_arrays[prop]["data"] = new Array();
+                                    data_arrays[prop]["label"].push(meteo_data[prop].label);
+                                    for (var i=0;i<meteo_data[prop].data.length;i++) {
+                                        data_arrays[prop]["data"].push([datetime[0][i],meteo_data[prop].data[i]]);    
+                                    }
+                                }
+                                for (var i=0;i<data_arrays.length;i++) {
+                                    plot_data.push (
+                                                    {
+                                                        label:data_arrays[i]["label"],
+                                                        data: data_arrays[i]["data"]
+                                                    }
+                                                    );
+                                }
+                                {#
+                                    при задании в качестве параметров - массива ({data:,label:})
+                                    использовать иденитификатор - $("класс или id")
+                                #}
+                                var plot =$.plot($("#graph"),
+                                                        plot_data,
+                                                        common_params[0]
+                                                         );
+                                plot.setupGrid();
+                                plot.draw();
+                                //var myCanvas = plot.getCanvas();
+                                //var image = myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  /// here is the most important part because if you dont replace you will get a DOM 18 exception.
+                                //document.location.href=image;
+                            }
+                            else {
+                             alert("За выбранный период данные отсутствуют!");
+                            }
+                            $(".button_grapth").attr('disabled', false);
+                        }
+                    });
+                });
+            });
+        
+        </script>
+        <div id="graph">
+            
+        </div>
+        
+        <div class="table_form">
+            <form id="get_graph" method="post" action="#" target="_blank">
+                <div id="table_all">
+                    <p align=center>Опции для построения графиков</p>   
+                    <div id="date_time_measure">
+                        <b>Год,месяц,день и время начала измерений </b>
+                        <p align="center">
+                            год
+                            <select class="for_multi" name="year">
+                                {%for key, year in array_years %}
+                                    {{year|raw}}
+                                {%endfor%}
+                            </select>
+                            месяц
+                            <select name="month">
+                                {% for month in array_month %}
+                                    {{month|raw}}
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <br/>
+                            день
+                            <select name="day">
+                                {% for day in array_days %}
+                                    {{day|raw}}
+                                {% endfor %}
+                            </select>
+                            час
+                            <select name="time_hh">
+                                {%for hour in array_hours%}
+                                    {{hour|raw}}
+                                {%endfor%}
+                            </select>
+                            мин
+                            <select name="time_mm">
+                                {%for minute in array_min_sec%}
+                                    {{minute|raw}}
+                                {%endfor%}
+                            </select>
+                        </p>
+                    </div>
+                    {#TODO::ВЫНЕСТИ В КОНСТАНТУ, КОТОРАЯ В УТИЛИТАХ#}
+                    <div id="special_options">
+                        <b>Длительность файла и дискретность измерений</b>
+                        <p align="center">
+                            <label for="dliteln">
+                                Длительность
+                            </label>
+                            <select id="dliteln" name="period">
+                                <option value="90">15 минут</option>
+                                <option selected="true" value="360">1 час</option>
+                                <option value="648">3 часа</option>
+                                <option value="2160">6 часов</option>
+                                <option value="3240">9 часов</option>
+                                <option value="4320">12 часов</option>
+                                <option value="8640">1 день</option>
+                                <option value="17280">2 дня</option>
+                                <option value="25920">3 дня</option>
+                                <option value="34560">4 дня</option>
+                                <option value="43200">5 дней</option>
+                                <option value="51840">6 дней</option>
+                                <option value="60480">7 дней</option>
+                                <option value="120960">14 дней</option>
+                                <option value="259200">30 дней</option>
+                            </select>
+                            <label for="diskretn">
+                                Дискретность
+                            </label>
+                            <select id="diskretn" name="discr">
+                                <option value="1">10 секунд
+                                <option value="6">1 минута
+                                <option value="30">5 минут
+                                <option selected="true" value="90">15 минут
+                                <option value="360">1 час
+                                <option value="648">3 часа
+                                <option value="2160">6 часов
+                            </select>
+                        </p>
+                    </div>
+                    <div id="meteo_params">
+                        <span>
+                            <label class="meteoparam_label" for="meteo_property">
+                                Метеовеличины
+                            </label>
+                        </span>
+                        {#ПЕЧАТАЕМ ПАРАМЕТРЫ, СПЕЦИФИЧНЫЕ ДЛЯ АИИС ПОГОДА#}
+                        <select id="meteo_property" multiple="multiple" class="param_meteo_grapth" name="meteo_param" >
+                            {%for params_specific in selects_params%}
+                                {#Тестовая версия#}
+                                {%if params_specific["value"]=="T" or params_specific["value"]=="F" or params_specific["value"]=="P"%}
+                                    <option value="{{params_specific["value"]}}" selected="true">
+                                        {{params_specific["name"]}}
+                                    </option>
+                                {%else%}
+                                    <option value="{{params_specific["value"]}}">
+                                        {{params_specific["name"]}}
+                                    </option>
+                                {%endif%}
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="additional_params">
+                        <b>Дополнительные параметры</b>
+                        <label>
+                            <input id="enableTooltip" type="checkbox" checked="checked">
+                            Показывать данные точки, при наведении
+                        </label>
+                    </div>
+                </div>
+            </form>
+            <div class="make_query_for_plotting">
+                <button onclick="return false;" type="button" class="button_grapth">Построить график</button>
+            </div>
+        </div>
+        {#чтобы теги не экранировались, используем модификатор raw#}            
+{% endblock %}

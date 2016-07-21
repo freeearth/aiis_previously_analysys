@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="PlotsBundle\Entity\RshuNew" table="rshu_new" repository-class="PlotsBundle\Entity\RshuRepository">>
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="t" type="float" column="T" precision="10" scale="0" nullable="true"/>
+    <field name="p" type="float" column="P" precision="10" scale="0" nullable="true"/>
+    <field name="f" type="float" column="F" precision="10" scale="0" nullable="true"/>
+    <field name="pr" type="float" column="Pr" precision="10" scale="0" nullable="true"/>
+    <field name="r" type="float" column="R" precision="10" scale="0" nullable="true"/>
+    <field name="vx" type="float" column="Vx" precision="10" scale="0" nullable="true"/>
+    <field name="vy" type="float" column="Vy" precision="10" scale="0" nullable="true"/>
+    <field name="d" type="float" column="d" precision="10" scale="0" nullable="true"/>
+    <field name="datetime" type="datetime" column="datetime" nullable="true"/>
+    <field name="edited" type="datetime" column="edited" nullable="false"/>
+  </entity>
+</doctrine-mapping>

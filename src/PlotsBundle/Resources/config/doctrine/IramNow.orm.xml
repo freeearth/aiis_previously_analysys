@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="PlotsBundle\Entity\IramNow" table="iram_now">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="t" type="string" column="T" length="255" nullable="true"/>
+    <field name="p" type="string" column="P" length="255" nullable="true"/>
+    <field name="f" type="string" column="F" length="255" nullable="true"/>
+    <field name="pr" type="string" column="Pr" length="255" nullable="true"/>
+    <field name="vx" type="string" column="Vx" length="255" nullable="true"/>
+    <field name="vy" type="string" column="Vy" length="255" nullable="true"/>
+    <field name="d" type="string" column="d" length="255" nullable="true"/>
+    <field name="datetime" type="datetime" column="datetime" nullable="true"/>
+    <field name="edited" type="datetime" column="edited" nullable="false"/>
+  </entity>
+</doctrine-mapping>

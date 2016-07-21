@@ -1,0 +1,5 @@
+#здесь добавляются сервисы, это могут быть сторонние расширения, пользовательские классы и т.д.
+services:
+    utilites:
+        class:        PlotsBundle\Classes\Utilites
+        #arguments:    [sendmail]

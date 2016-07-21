@@ -1,0 +1,13 @@
+{# app/Resources/TwigBundle/views/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+{% block title %}Ошибка 404{% endblock %}
+{% block body %}
+    <h1>Страница не найдена!</h1>
+
+    {# example security usage, see below #}
+    <h3>Запрашиваемая страница не может быть отображена.</h3>
+    <p>
+        Проверьте правильность написания URL.<br/><br/>
+        Также, вы можете перейти на <a href="{{ path('plots_homepage') }}">домашнюю страницу</a> сайта.
+    </p>
+{% endblock %}

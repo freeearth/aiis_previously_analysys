@@ -1,0 +1,534 @@
+{% block title %}
+    <title>
+        Предварительный анализ данных из архива АИИС
+    </title>
+{% endblock %}
+{% block stylesheets %}
+    <link href="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.theme.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/css/main.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('bundles/plots/js/bootstrap-multiselect/docs/css/bootstrap-3.3.2.min.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/css/bootstrap-multiselect.css') }}" type="text/css" rel="stylesheet">
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-1.11.3.min.js') }}"></script>
+    
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-ui-1.11.0/jquery-ui.js') }}"></script>
+    {#<script type="text/javascript" src="{{ asset('bundles/plots/js/jquery-ui-1.8.23/ui/i18n/jquery.ui.datepicker-ru.js') }}"></script>#}
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/docs/js/bootstrap-3.3.2.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/js/bootstrap-multiselect.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/plots/js/bootstrap-multiselect/dist/js/bootstrap-multiselect-collapsible-groups.js')}}"></script>
+    {#jquery flot#}
+    
+    {#Save image as#}
+        
+    <script type="text/javascript" src="{{asset('bundles/plots/js/Highcharts/highcharts.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/Highcharts/highcharts-more.js')}}"></script>
+    <script type="text/javascript" src="{{asset('bundles/plots/js/Highcharts/modules/exporting.js')}}"></script>        
+    <script type="text/javascript" src="{{asset('bundles/plots/js/Highcharts/modules/offline-exporting.js')}}"></script> 
+   {#при подключении отваливается отображение коректной даты<script type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.coordinate.js/jquery.flot.coordinate.js')}}"></script>#}
+    {#Navigation Control#}
+    {#<script language="text/javascript" type="text/javascript" src="{{asset('bundles/plots/js/jquery.flot.navigationControl/jquery.flot.navigationControl.js')}}"></script>#}
+{% endblock %}
+{% block body %}
+        <script type="text/javascript">
+            var fileName = "sample";
+            var Type = "spline";
+            var Polar = false;
+            var title_time_from = "";
+            var title_time_to = "";
+            var common_params = [];
+            var plot;
+                                
+            common_params.push({
+                chart: {
+                    polar: false,
+                    type: "spline"
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    type: 'datetime',
+                    
+                    reversed: false,
+                    title: {
+                        enabled: false,
+                    },
+                    maxPadding: 0.05,
+                    showLastLabel: true
+                },
+                yAxis: {
+                    lineWidth: 2,
+                    title: {
+                        enabled: true,
+                        text: "Value"
+                    }
+                },
+                legend: {
+                    enabled: true,
+                    align:"left",
+                    verticalAlign: "bottom"   
+                },
+                plotOptions: {
+                    spline: {
+                        marker: {
+                            enable: false
+                        }
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                 exporting: {
+                    buttons: {
+                        contextButton: {
+                            menuItems: [
+                                {//1 кнопка
+                                    text: 'Сохранить график в формате png',
+                                    onclick: function () {
+                                        this.exportChartLocal (
+                                            {
+                                                type: 'image/png',
+                                                filename: fileName
+                                            },null
+                                        );
+                                    }
+                                },
+                                {//2 кнопка
+                                    text: 'Сохранить график в формате svg',
+                                    onclick: function () {
+                                        this.exportChartLocal (
+                                            {
+                                                type: 'image/svg+xml',
+                                                filename: fileName
+                                            },null
+                                        );
+                                    }
+                                },
+                                {
+                                    separator: true
+                                },
+                                {//3 кнопка
+                                    text: 'Распечатать график',
+                                    onclick: function () {
+                                        this.print();
+                                    },
+                                }
+                            ],
+                            text : "Cохранить",
+                            navigation: {
+                                buttonOptions: {
+                                    height: 20,
+                                    width: 20,
+                                    symbolSize: 14,
+                                    symbolX: 13,
+                                    symbolY: 11,
+                                    symbolStrokeWidth: 3,
+                                    symbolFill: "#191970"
+                                }
+                            },
+                            style: {
+                                color: 'red',
+                                font: '13px Arial, sans-serif'
+                            }
+                        }
+                    },
+                    fallbackToExportServer:true
+                 }
+                
+                
+            });//общие параметры для графиков
+             
+            $(document).ready(function() {
+                                
+                $('.param_meteo_grapth').multiselect({
+                    buttonWidth: '200px',
+                    enableFiltering: true,
+                    nonSelectedText: 'Ничего не выбрано',
+                    nSelectedText: 'выбрано',
+                    allSelectedText: 'Выбрано все',
+                    onChange: function(element, checked) {
+                        var old_selected = $('.param_meteo_grapth option:selected');
+                        if (this.$select.val()!==null) {
+							if (this.$select.val().indexOf("d")!==-1) {
+								old_selected.each(function(){
+									if ($(this).val()!=="d") {
+										this.selected=false;
+									}
+								});
+								$(".param_meteo_grapth").multiselect('refresh');
+							}
+						}
+                    }
+                });
+               $('.button_grapth').on('click', function() {
+					common_params[0].chart.polar = false;
+					common_params[0].chart.type = "spline";
+					common_params[0].xAxis.type = "datetime";
+					common_params[0].xAxis.tickmarkPlacement = 'off';
+					delete common_params[0].xAxis.categories;
+                    $(".button_grapth").attr('disabled', true);
+                    $("#enableTooltip").attr('disabled', true);
+                    $("#enablePlotTitle").attr('disabled', true);
+                    
+                    $("#graph").empty();
+                    var loading_imit = "<div id='loadingmessage'\n\
+                                            style='z-index:100;display:none;position:relative;width:100%;height:100%;background:white;opacity:0.6'>\n\
+                                            <div>\n\
+                                                <p align='center' style='display: block;left: 330px;position: absolute;top: 110px;color:grey'><b>Пожалуйста подождите,<br/>идет загрузка</b></p>\n\
+                                                <img style='z-index:10;display: block;left: 400px;position: absolute;top: 150px;'\n\
+                                                 src='{{ asset('bundles/plots/images/ajax/ajax-loader.gif')}}'/>\n\
+                                            </div>\n\
+                                        </div>";
+                    $("#graph").append(loading_imit);
+                    var params = $("#get_graph").serializeArray();
+                    $('#loadingmessage').show();
+                    $.ajax({
+                       data: "params="+encodeURIComponent(JSON.stringify(params)),
+                       url:"{{adress_name}}DataForGraph",
+                       //contentType:"application/json;charset=UTF-8",
+                       type: "post",
+                       success: function(meteo_arr){
+                            $('#loadingmessage').hide();
+                            if (meteo_arr==0x01) {
+                                alert("Не выбрано ни одного метеорологического параметра для построения графика.\nПожалуйста выберите хотя-бы один параметр и повторите запрос.");
+                            }
+                             if (meteo_arr==0x02) {
+                                alert("Дискретность не может превышать длительность файла");
+                            }
+                            if (meteo_arr!=="null"&&meteo_arr!=="error!") {
+                                var datetime = [];//массив для даты и времени
+                                var meteo_data = [];//массив для метеопараметров
+                                var plot_data = [];
+                                var filename_for_export = "";
+                                var res = JSON.parse(meteo_arr);
+                                for (var prop in res) {
+                                    if (prop === "datetime") {
+                                        datetime.push(res[prop][0]);
+                                    }
+                                    if (prop == "time_from") {
+                                        title_time_from = res[prop][0];
+                                    }
+                                    if (prop == "time_to") {
+                                        title_time_to = res[prop][0];
+                                    }
+                                    if (prop !== "datetime"&&prop !== "filename_for_export"&&prop !== "time_to"&&prop !== "time_from") {
+                                        meteo_data.push(
+                                                            {
+                                                                name:prop,
+                                                                data: res[prop][0]
+                                                            }
+                                        );
+                                    }
+                                    if (prop === "filename_for_export") {
+                                        filename_for_export = res[prop][0];
+                                    }
+                                }
+                                var data_arrays = [];//массив для данных графика
+                                for (var prop in meteo_data) {
+                                    //странная инициализация
+                                    data_arrays[prop] = new Array();
+                                    data_arrays[prop]["name"] = new Array();
+                                    data_arrays[prop]["data"] = new Array();
+                                    data_arrays[prop]["name"].push(meteo_data[prop].name);
+                                    for (var i=0;i<meteo_data[prop].data.length;i++) {
+                                        if (data_arrays[prop]["name"] != "d") {
+                                            data_arrays[prop]["data"].push([datetime[0][i],meteo_data[prop].data[i]]);
+                                        }
+                                        if (data_arrays[prop]["name"] == "d") {
+                                            data_arrays[prop]["data"].push(meteo_data[prop].data[i]);
+                                        }
+                                    }
+                                }
+                                for (var i=0;i<data_arrays.length;i++) {
+                                    plot_data.push (
+                                                    {
+                                                        name:data_arrays[i]["name"],
+                                                        data:data_arrays[i]["data"]
+                                                    }
+                                                    );
+                                }
+                                {#
+                                    при задании в качестве параметров - массива ({data:,label:})
+                                    использовать иденитификатор - $("класс или id")
+                                #}
+                                fileName = filename_for_export;
+                                if (data_arrays[0]["name"] == "d") {
+                                    common_params[0].chart.polar = true;
+                                    common_params[0].chart.type = "line";
+                                    common_params[0].xAxis.type = "linear";
+                                    common_params[0].xAxis.tickmarkPlacement = 'on';
+                                    var categories = [0,45,90,135,180,225,270,315];
+                                    common_params[0].xAxis.categories = categories;
+                                    var wind_directions = [];
+            
+                                    wind_directions["0"] = 0;
+                                    wind_directions["45"] = 0;
+                                    wind_directions["90"] = 0;
+                                    wind_directions["135"] = 0;
+                                    wind_directions["180"] = 0;
+                                    wind_directions["225"] = 0;
+                                    wind_directions["270"] = 0;
+                                    wind_directions["315"] = 0;
+                                        
+                                    for (var i=0;i<data_arrays[0]["data"].length;i++) {
+                                        if(data_arrays[0]["data"][i]>=0&&data_arrays[0]["data"][i]<45) {
+                                            wind_directions["0"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=45&&data_arrays[0]["data"][i]<90) {
+                                            wind_directions["45"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=90&&data_arrays[0]["data"][i]<135) {
+                                            wind_directions["90"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=135&&data_arrays[0]["data"][i]<180) {
+                                            wind_directions["135"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=180&&data_arrays[0]["data"][i]<225) {
+                                            wind_directions["180"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=225&&data_arrays[0]["data"][i]<270) {
+                                            wind_directions["225"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=270&&data_arrays[0]["data"][i]<315) {
+                                            wind_directions["270"]++;
+                                        }
+                                        if(data_arrays[0]["data"][i]>=315&&data_arrays[0]["data"][i]<360) {
+                                            wind_directions["315"]++;
+                                        }
+                                    }
+                                    var total_number_directions = [wind_directions["0"],wind_directions["45"],wind_directions["90"],wind_directions["135"],wind_directions["180"],wind_directions["225"],wind_directions["270"],wind_directions["315"]];
+                                    delete data_arrays[0]["data"];
+                                    data_arrays[0]["data"] = total_number_directions;
+                                }
+                                $("#graph").highcharts(common_params[0]);
+                                plot = $("#graph").highcharts();
+                                
+                                for (var i=0;i<data_arrays.length;i++) {
+                                    plot.addSeries({
+                                                    data: data_arrays[i]["data"],
+                                                    name: data_arrays[i]["name"],
+                                                    pointPlacement: 'on'
+                                                    });
+                                    {#if (data_arrays[0]["name"] == "d") {
+                                        plot.addSeries({
+                                                    data: data_arrays[i]["data"],
+                                                    name: "d_area",
+                                                    type: 'area'
+                                                    });
+                                        plot.addSeries({
+                                                    data: data_arrays[i]["data"],
+                                                    name: "d_column",
+                                                    type: 'column'
+                                                    });
+                                    }#}
+                                    
+                                                    {# работоспособный пример 
+                                                    plot.addSeries({
+                                                    data: [
+                                                        [Date.UTC(1970, 9, 29), 0],
+                                                        [Date.UTC(1970, 10, 9), 0.4],
+                                                        [Date.UTC(1970, 11, 1), 0.25],
+                                                        [Date.UTC(1971, 0, 1), 1.66],
+                                                        [Date.UTC(1971, 0, 10), 1.8],
+                                                        [Date.UTC(1971, 1, 19), 1.76],
+                                                        [Date.UTC(1971, 2, 25), 2.62],
+                                                        [Date.UTC(1971, 3, 19), 2.41],
+                                                        [Date.UTC(1971, 3, 30), 2.05],
+                                                        [Date.UTC(1971, 4, 14), 1.7],
+                                                        [Date.UTC(1971, 4, 24), 1.1],
+                                                        [Date.UTC(1971, 5, 10), 0]
+                                                    ],
+                                                    name: "name"
+                                                    });#}
+                                }
+                                var x = document.getElementById("enablePlotTitle").checked;
+                                if (x == true) {
+                                    plot.setTitle({text: 'Data at RSHU AIIS "POGODA"<br>from '+title_time_from+" to "+ title_time_to});
+                                }
+                                if (x == false) {
+                                    plot.setTitle({text: ""})
+                                }
+                                $('#enablePlotTitle').on('change', function() {
+                                    var x = document.getElementById("enablePlotTitle").checked;
+                                    if (x == true) {
+                                        plot.setTitle({text: 'Data at RSHU AIIS "POGODA"<br>from '+title_time_from+" to "+ title_time_to});
+                                    }
+                                    if (x == false) {
+                                        plot.setTitle({text: ""})
+                                    }
+                                });
+                                
+                                var y = document.getElementById("enableTooltip").checked;
+                                    if (y == true) {
+                                        for (var i=0;i<data_arrays.length;i++) {
+                                            plot.series[i].update({marker:{enabled:true},enableMouseTracking: true});
+                                        }
+                                        plot.redraw();
+                                    }
+                                    if (y == false) {
+                                        for (var i=0;i<data_arrays.length;i++) {
+                                            plot.series[i].update({marker:{enabled:false},enableMouseTracking: false});
+                                        }
+                                        plot.redraw();
+                                    }
+                                $('#enableTooltip').on('change', function() {
+                                    var x = document.getElementById("enableTooltip").checked;
+                                    if (x == true) {
+                                        for (var i=0;i<data_arrays.length;i++) {
+                                            plot.series[i].update({marker:{enabled:true},enableMouseTracking: true});
+                                        }
+                                        plot.redraw();
+                                    }
+                                    if (x == false) {
+                                        for (var i=0;i<data_arrays.length;i++) {
+                                            plot.series[i].update({marker:{enabled:false},enableMouseTracking: false});
+                                        }
+                                        plot.redraw();
+                                    }
+                                });
+                                //plot.redraw();
+                                //var myCanvas = plot.getCanvas();
+                                //var image = myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  /// here is the most important part because if you dont replace you will get a DOM 18 exception.
+                                //document.location.href=image;
+                            }
+                            if (meteo_arr=="null") {
+                                alert("За выбранный период данные отсутствуют!");
+                            }
+                            if (meteo_arr=="error") {
+                                alert("Ошибка получения данных!");
+                            }
+                            $(".button_grapth").attr('disabled', false);
+                            $("#enableTooltip").attr('disabled', false);
+                            $("#enablePlotTitle").attr('disabled', false);
+                        }
+                    });
+                });
+            });
+        
+        </script>
+        <div id="graph">
+            
+        </div>
+        
+        <div class="table_form">
+            <form id="get_graph" method="post" action="#" target="_blank">
+                <div id="table_all">
+                    <p align=center>Опции для построения графиков</p>   
+                    <div id="date_time_measure">
+                        <b>Год,месяц,день и время начала измерений </b>
+                        <p align="center">
+                            год
+                            <select class="for_multi" name="year">
+                                {%for key, year in array_years %}
+                                    {{year|raw}}
+                                {%endfor%}
+                            </select>
+                            месяц
+                            <select name="month">
+                                {% for month in array_month %}
+                                    {{month|raw}}
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <br/>
+                            день
+                            <select name="day">
+                                {% for day in array_days %}
+                                    {{day|raw}}
+                                {% endfor %}
+                            </select>
+                            час
+                            <select name="time_hh">
+                                {%for hour in array_hours%}
+                                    {{hour|raw}}
+                                {%endfor%}
+                            </select>
+                            мин
+                            <select name="time_mm">
+                                {%for minute in array_min_sec%}
+                                    {{minute|raw}}
+                                {%endfor%}
+                            </select>
+                        </p>
+                    </div>
+                    {#TODO::ВЫНЕСТИ В КОНСТАНТУ, КОТОРАЯ В УТИЛИТАХ#}
+                    <div id="special_options">
+                        <b>Длительность файла и дискретность измерений</b>
+                        <p align="center">
+                            <label for="dliteln">
+                                Длительность
+                            </label>
+                            <select id="dliteln" name="period">
+                                <option value="90">15 минут</option>
+                                <option selected="true" value="360">1 час</option>
+                                <option value="648">3 часа</option>
+                                <option value="2160">6 часов</option>
+                                <option value="3240">9 часов</option>
+                                <option value="4320">12 часов</option>
+                                <option value="8640">1 день</option>
+                                <option value="17280">2 дня</option>
+                                <option value="25920">3 дня</option>
+                                <option value="34560">4 дня</option>
+                                <option value="43200">5 дней</option>
+                                <option value="51840">6 дней</option>
+                                <option value="60480">7 дней</option>
+                                <option value="120960">14 дней</option>
+                                <option value="259200">30 дней</option>
+                            </select>
+                            <label for="diskretn">
+                                Дискретность
+                            </label>
+                            <select id="diskretn" name="discr">
+                                <option value="1">10 секунд
+                                <option value="6">1 минута
+                                <option value="30">5 минут
+                                <option selected="true" value="90">15 минут
+                                <option value="360">1 час
+                                <option value="648">3 часа
+                                <option value="2160">6 часов
+                            </select>
+                        </p>
+                    </div>
+                    <div id="meteo_params">
+                        <span>
+                            <label class="meteoparam_label" for="meteo_property">
+                                Метеовеличины
+                            </label>
+                        </span>
+                        {#ПЕЧАТАЕМ ПАРАМЕТРЫ, СПЕЦИФИЧНЫЕ ДЛЯ АИИС ПОГОДА#}
+                        <select id="meteo_property" multiple="true" class="param_meteo_grapth" name="meteo_param" >
+                            {%for params_specific in selects_params%}
+                                {#Тестовая версия#}
+                                {%if params_specific["value"]=="T"%}
+                                    <option value="{{params_specific["value"]}}" selected="true">
+                                        {{params_specific["name"]}}
+                                    </option>
+                                {%else%}
+                                    <option value="{{params_specific["value"]}}">
+                                        {{params_specific["name"]}}
+                                    </option>
+                                {%endif%}
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="additional_params">
+                        <b>Дополнительные параметры</b>
+                        <label>
+                            <input id="enableTooltip" type="checkbox" checked="checked">
+                            Показывать данные точки, при наведении
+                        </label>
+                        <label>
+                            <input id="enablePlotTitle" type="checkbox" checked="checked">
+                            Показывать заголовок графика
+                        </label>
+                    </div>
+                </div>
+            </form>
+            <div class="make_query_for_plotting">
+                <button onclick="return false;" type="button" class="button_grapth">Построить график</button>
+            </div>
+        </div>
+        {#чтобы теги не экранировались, используем модификатор raw#}            
+{% endblock %}

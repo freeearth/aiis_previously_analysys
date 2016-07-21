@@ -1,0 +1,193 @@
+/* 
+    Document   : main
+    Created on : 14.03.2014, 10:23:29
+    Author     : class429
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+body {
+    font-family: 'Arial';
+    font-size: 14px;
+    background: url(../js/jquery.flot.saveAsImage.js/examples/background.png) repeat-x;
+}
+
+label {
+    display: inline-block;
+    font-weight: 10;
+    margin-bottom: 5px;
+    max-width: 100%;
+}
+.ui-widget { 
+     font-size: 0.8em;
+}
+.param_meteo {
+    font-size: 0.7em;
+    width: 300px;
+}
+/*ДЛЯ КОНТЕЙНЕРА ГРАФИКА*/
+#graph {
+    width: 800px;
+    height: 600px;
+}
+ /*ДЛЯ ТАБЛИЧНЫХ DIV'ОВ', ТОЖЕ САМОЕ, ЧТО И НА ДРУГОМ СЕРВЕРЕ*/
+ /*
+ table
+ {
+  color:black; 
+  width: 100%;
+  height: 100%;
+  border-width: 0;
+  border-spacing: 0;
+  padding: 0;
+   }
+td
+ {
+  border-width: 1;
+  border-spacing: 0;
+  width: 70%;
+  height: 30%;
+  border-color: black;
+  border-style: solid;
+  text-align: center;
+  font-size: 24pt;
+ }
+tr
+ {
+  border-width: 1;
+  border-spacing: 0;
+  border-color: lightred;
+  border-style: solid;
+  text-align: center;
+ }
+ */
+
+#table_all, #date_time_measure, #meteo_params, #special_options, .additional_params {
+    margin:10px;
+    border: 1px solid black;
+    padding:0px 5px;
+    font-size:15px;
+}
+/*
+КОНТЕЙНЕР ДЛЯ ВСЕЙ ТАБЛИЦЫ
+*/
+#table_all {
+    background: none repeat scroll 0 0 #008000;
+    bottom: 620px;
+    color: #7FFFD4;
+    float: right;
+    height: 600px;
+    position: relative;
+    right: 10px;
+    text-align: left;
+    width: 440px;
+}
+
+/*
+КОНТЕЙНЕР ДЛЯ ДАТЫ И ВРЕМЕНИ ИЗМЕРЕНИЯ
+*/
+#date_time_measure {
+    background: none repeat scroll 0 0 #FF0000;
+    color: #000000;
+    height: auto;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    width: 420px;
+}
+/*
+КОНТЕЙНЕР ДЛЯ МЕТЕОПАРАМЕТРОВ
+*/
+#meteo_params {
+    background: none repeat scroll 0 0 #8A2BE2;
+    color: #000000;
+    height: auto;
+    left: 0;
+    position: absolute;
+    text-align: left;
+    top: 200px;
+    width: 420px;
+} 
+
+#special_options {
+    background: none repeat scroll 0 0 #FFFF00;
+    color: #000000;
+    height: auto;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 130px;
+    width: 420px;
+} 
+/*
+ПОКА НЕ ИСПОЛЬЗУЮТСЯ
+#copyright {
+    position:absolute;
+    left:840px;
+    top:590px;
+    text-align:center;
+    color:green;
+}
+*/
+/*
+DIV, ДЛЯ ССЫЛКИ НА ПОЛУЧЕНИЕ EXCEL ФАЙЛА
+*/
+.excel_link {
+    background-color: cyan;
+    left: 5px;
+    position: relative;
+    top: 900px;
+    width: 590px;
+}
+ 
+/*
+ДЛЯ INPUT'ОВ В ТАБЛИЦЕ, ЧТОБЫ НЕ УЕЗЖАЛИ СИЛЬНО ВЛЕВО
+*/
+.for_input_of_table {
+    float:right;
+    padding-left: 110px;
+}
+
+/*
+ДЛЯ КНОПКИ - АКТИВАТОРА ФОРМЫ ПОЛУЧЕНИЯ ДАННЫХ
+*/
+.submit_table_data {
+    left: 665px;
+    position: relative;
+    top: 1030px;
+}
+
+/*
+СМЕЩЕНИЕ ДЛЯ label(метеопараметры)
+*/
+.meteoparam_label {
+    margin-right: 90px;
+}
+
+/*
+ для кнопки отправки формы
+*/
+.make_query_for_plotting {
+    bottom: 100px;
+    left: 1100px;
+    position: relative;
+}
+
+/*
+    дополнительные параметры 
+    для управления графиком
+*/
+.additional_params {
+    background: none repeat scroll 0 0 #FF00FF;
+    color: #000000;
+    height: auto;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 250px;
+    width: 420px;
+}

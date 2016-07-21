@@ -1,0 +1,12 @@
+<html>
+    
+    {#подключение бандла только в формате PlotsBundle:Default:имя_бандла#}
+    
+    {% include 'PlotsBundle:Default:header.html.twig'%}
+    {% include('PlotsBundle:Default:plot.html.twig')%}
+    {% block header %}
+    {% endblock %}
+    <body>
+        {% block body %}{% endblock %}    
+    </body>
+</html>

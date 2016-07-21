@@ -1,0 +1,19 @@
+{# app/Resources/TwigBundle/views/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+{% block title %}Ошибка 500{% endblock %}
+{% block body %}
+    <h1>Внутренняя ошибка сервера!</h1>
+    <h3>Сервер вернул ошибку №500</h3>
+    {# example security usage, see below #}
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        {# ... #}
+    {% endif %}
+    
+
+    <p>
+        Возможно, что-то перестало правильно работать.<br/> <br/>
+        Пожалуйста, дайте нам знать, какие действия привели к возникновению данной ошибки.<br/><br/>
+        И мы устаним ошибку так скоро, как это возможно.<br/><br/>
+        Вернуться на <a href="{{ path('plots_homepage') }}">домашнюю страницу</a> сайта.
+    </p>
+{% endblock %}

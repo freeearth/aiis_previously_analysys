@@ -1,0 +1,18 @@
+{# app/Resources/TwigBundle/views/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+{% block title %}Ошибка {{status_code|nl2br}}{% endblock %}
+{% block body %}
+    <h1>{{status_text|nl2br}}</h1>
+    {# example security usage, see below #}
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        {# ... #}
+    {% endif %}
+    
+
+    <p>
+        Возможно, что-то перестало правильно работать.<br/> <br/>
+        Пожалуйста, дайте нам знать, какие действия привели к возникновению данной ошибки.<br/><br/>
+        И мы устаним ошибку так скоро, как это возможно.<br/><br/>
+        Вернуться на <a href="{{ path('plots_homepage') }}">домашнюю страницу</a> сайта.
+    </p>
+{% endblock %}
