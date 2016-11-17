@@ -172,9 +172,11 @@ DIV, ДЛЯ ССЫЛКИ НА ПОЛУЧЕНИЕ EXCEL ФАЙЛА
  для кнопки отправки формы
 */
 .make_query_for_plotting {
-    bottom: 100px;
-    left: 1100px;
+    color: black;
+    font-size: 14px;
+    left: 5px;
     position: relative;
+    top: 300px;
 }
 
 /*
@@ -190,4 +192,13 @@ DIV, ДЛЯ ССЫЛКИ НА ПОЛУЧЕНИЕ EXCEL ФАЙЛА
     text-align: center;
     top: 250px;
     width: 420px;
+}
+
+.additional_info {
+    color: #000000;
+    height: auto;
+    left: 5px;
+    position: relative;
+    text-align: left;
+    top: 370px;
 }

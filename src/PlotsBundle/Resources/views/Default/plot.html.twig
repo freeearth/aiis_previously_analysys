@@ -56,7 +56,7 @@
                         enabled: false,
                     },
                     maxPadding: 0.05,
-                    showLastLabel: true
+                    showLastLabel: false
                 },
                 yAxis: {
                     lineWidth: 2,
@@ -258,47 +258,102 @@
                                     common_params[0].chart.polar = true;
                                     common_params[0].chart.type = "line";
                                     common_params[0].xAxis.type = "linear";
-                                    common_params[0].xAxis.tickmarkPlacement = 'on';
-                                    var categories = [0,45,90,135,180,225,270,315];
+                                    common_params[0].xAxis.tickmarkPlacement = 'off';
+                                    var categories = [0,22.5,45,67.5,90,112.5,135,157.5,180,202.5,225,247.5,270,292.5,315,337.5];
                                     common_params[0].xAxis.categories = categories;
                                     var wind_directions = [];
-            
+                                    {#
+                                        шаг розы ветров == 22.5 градуса
+                                    #}
                                     wind_directions["0"] = 0;
+                                    wind_directions["22.5"] = 0;
                                     wind_directions["45"] = 0;
+                                    wind_directions["67.5"] = 0;
                                     wind_directions["90"] = 0;
+                                    wind_directions["112.5"] = 0;
                                     wind_directions["135"] = 0;
+                                    wind_directions["157.5"] = 0;
                                     wind_directions["180"] = 0;
+                                    wind_directions["202.5"] = 0;
                                     wind_directions["225"] = 0;
+                                    wind_directions["247.5"] = 0;
                                     wind_directions["270"] = 0;
+                                    wind_directions["292.5"] = 0;
                                     wind_directions["315"] = 0;
+                                    wind_directions["337.5"] = 0;
                                         
                                     for (var i=0;i<data_arrays[0]["data"].length;i++) {
-                                        if(data_arrays[0]["data"][i]>=0&&data_arrays[0]["data"][i]<45) {
+                                        if(data_arrays[0]["data"][i]>=0&&data_arrays[0]["data"][i]<22.5) {
                                             wind_directions["0"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=45&&data_arrays[0]["data"][i]<90) {
+                                        if(data_arrays[0]["data"][i]>=22.5&&data_arrays[0]["data"][i]<45) {
+                                            wind_directions["22.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=45&&data_arrays[0]["data"][i]<67.5) {
                                             wind_directions["45"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=90&&data_arrays[0]["data"][i]<135) {
+                                        if(data_arrays[0]["data"][i]>=67.5&&data_arrays[0]["data"][i]<90) {
+                                            wind_directions["67.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=90&&data_arrays[0]["data"][i]<112.5) {
                                             wind_directions["90"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=135&&data_arrays[0]["data"][i]<180) {
+                                        if(data_arrays[0]["data"][i]>=112.5&&data_arrays[0]["data"][i]<135) {
+                                            wind_directions["112.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=135&&data_arrays[0]["data"][i]<157.5) {
                                             wind_directions["135"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=180&&data_arrays[0]["data"][i]<225) {
+                                        if(data_arrays[0]["data"][i]>=157.5&&data_arrays[0]["data"][i]<180) {
+                                            wind_directions["157.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=180&&data_arrays[0]["data"][i]<202.5) {
                                             wind_directions["180"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=225&&data_arrays[0]["data"][i]<270) {
+                                        if(data_arrays[0]["data"][i]>=202.5&&data_arrays[0]["data"][i]<225) {
+                                            wind_directions["202.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=225&&data_arrays[0]["data"][i]<247.5) {
                                             wind_directions["225"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=270&&data_arrays[0]["data"][i]<315) {
+                                        if(data_arrays[0]["data"][i]>=247.5&&data_arrays[0]["data"][i]<270) {
+                                            wind_directions["247.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=270&&data_arrays[0]["data"][i]<292.5) {
                                             wind_directions["270"]++;
                                         }
-                                        if(data_arrays[0]["data"][i]>=315&&data_arrays[0]["data"][i]<360) {
+                                        if(data_arrays[0]["data"][i]>=292.5&&data_arrays[0]["data"][i]<315) {
+                                            wind_directions["292.5"]++;
+                                        }
+                                        {#
+                                        *********************************************************************
+                                        #}
+                                        if(data_arrays[0]["data"][i]>=315&&data_arrays[0]["data"][i]<337.5) {
                                             wind_directions["315"]++;
                                         }
+                                        if(data_arrays[0]["data"][i]>=337.5&&data_arrays[0]["data"][i]<360) {
+                                            wind_directions["337.5"]++;
+                                        }
                                     }
-                                    var total_number_directions = [wind_directions["0"],wind_directions["45"],wind_directions["90"],wind_directions["135"],wind_directions["180"],wind_directions["225"],wind_directions["270"],wind_directions["315"]];
+                                    var total_number_directions = [wind_directions["0"],wind_directions["22.5"],wind_directions["45"],wind_directions["67.5"],wind_directions["90"],wind_directions["112.5"],wind_directions["135"],wind_directions["157.5"],wind_directions["180"],wind_directions["202.5"],wind_directions["225"],wind_directions["247.5"],wind_directions["270"],wind_directions["292.5"],wind_directions["315"],wind_directions["337.5"]];
                                     delete data_arrays[0]["data"];
                                     data_arrays[0]["data"] = total_number_directions;
                                 }
@@ -524,11 +579,18 @@
                             Показывать заголовок графика
                         </label>
                     </div>
+                    <div class="additional_info">
+                        <label>
+                                <a target="_blank" href="https://github.com/freeearth/aiis_previously_analysys">
+                                        Этот проект на github
+                                </a>
+                        </label>
+                    </div>
+                    <div class="make_query_for_plotting">
+                        <button onclick="return false;" type="button" class="button_grapth">Построить график</button>
+                    </div>
                 </div>
             </form>
-            <div class="make_query_for_plotting">
-                <button onclick="return false;" type="button" class="button_grapth">Построить график</button>
-            </div>
-        </div>
+	</div>
         {#чтобы теги не экранировались, используем модификатор raw#}            
 {% endblock %}
